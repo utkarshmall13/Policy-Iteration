@@ -42,16 +42,12 @@ int operate(int a,int mask){
 }
 
 
-vector<int> findSeq(int last,vector<int> &alreadyIn,vector<int> &alreadyInCount,vector<int> &npossibleOp,vector<int> &npossibleOpCount,int n){
+vector<int> findSeq(int last,vector<bool> &alreadyIn,vector<bool> &npossibleOp,int n){
 //to find the operations with that can still be used
-    vector<bool> arr(int(pow(2,n)));
     //cout<<"last "<<representBin(last,n)<<endl;
-    for(int i=0;i<npossibleOp.size();i++){
-        arr[npossibleOp[i]]=true;
-    }
     vector<int> possibleOp;
-    for(int i=1;i<arr.size();i++){
-        if(!arr[i]) {
+    for(int i=1;i<npossibleOp.size();i++){
+        if(!npossibleOp[i]) {
             possibleOp.push_back(i);
             //cout<<"possibleOp"<<i<<endl;
         }
@@ -62,18 +58,19 @@ vector<int> findSeq(int last,vector<int> &alreadyIn,vector<int> &alreadyInCount,
         int x=operate(last,possibleOp[i]);
         //cout<<last<<" "<<possibleOp[i]<<" "<<i<<" "<<x<<endl;
 //if found strategy not gives a deproved value move inside 'if' else check next strategy
-        if(find(alreadyIn.begin(),alreadyIn.end(),x)==alreadyIn.end()){
+        if(!alreadyIn[x]){
 //now find and insert all new deproved policies found from this change in alreadyIn
-//this act as a stack every time we move depper into tree
+//this act as a stack every time we move deeper into tree
 //when moving back to parent node remove last count values from stack
             vector<int> nums = findPossibilities(possibleOp[i],n);
-            int count=0;
+            vector<int> changesInAlreadyIn;
+            vector<int> changesInNPossibleOp;
             for(int j=0;j<nums.size();j++){
                 //cout<<"NUM" <<representBin(x,n)<<" "<<representBin(possibleOp[i],n)<<" "<<representBin(nums[j],n)<<endl;
                 int newnum=(last&possibleOp[i])|nums[j];
-                if(find(alreadyIn.begin(),alreadyIn.end(),newnum)==alreadyIn.end()){
-                    count++;
-                    alreadyIn.push_back(newnum);
+                if(!alreadyIn[newnum]){
+                    alreadyIn[newnum]=true;
+                    changesInAlreadyIn.push_back(newnum);
                 }
             }
             /*cout<<"nums ";
@@ -82,13 +79,11 @@ vector<int> findSeq(int last,vector<int> &alreadyIn,vector<int> &alreadyInCount,
             }
             cout<<endl;*/
 //similar to alreadyIn insert superset strategies into npossibleOp
-            alreadyInCount.push_back(count);
-            count=0;
             for(int j=0;j<nums.size();j++){
                 int newop=possibleOp[i]|nums[j];
-                if(find(npossibleOp.begin(),npossibleOp.end(),newop)==npossibleOp.end()){
-                    count++;
-                    npossibleOp.push_back(newop);
+                if(!npossibleOp[newop]){
+                    changesInNPossibleOp.push_back(newop);
+                    npossibleOp[newop]=true;
                 }
             }
             /*cout<<"ops ";
@@ -97,18 +92,15 @@ vector<int> findSeq(int last,vector<int> &alreadyIn,vector<int> &alreadyInCount,
             }
             cout<<endl;*/
 
+            vector<int> tmp=findSeq(x,alreadyIn,npossibleOp,n);
 
-//removing values belonging to siblings from stack.
-            npossibleOpCount.push_back(count);
-            vector<int> tmp=findSeq(x,alreadyIn,alreadyInCount,npossibleOp,npossibleOpCount,n);
-            for(int j=0;j<npossibleOpCount[npossibleOpCount.size()-1];j++){
-                npossibleOp.pop_back();
+            //removing values belonging to siblings from stack.
+            for(int j=0;j<changesInAlreadyIn.size();j++){
+                alreadyIn[changesInAlreadyIn[j]]=false;
             }
-            npossibleOpCount.pop_back();
-            for(int j=0;j<alreadyInCount[alreadyInCount.size()-1];j++){
-                alreadyIn.pop_back();
+            for(int j=0;j<changesInNPossibleOp.size();j++){
+                npossibleOp[changesInNPossibleOp[j]]=false;;
             }
-            alreadyInCount.pop_back();
             /*if(tmp.size()==3){
                 cout<<representBin(0,n)<<endl;
                 cout<<representBin(last,n)<<endl;
@@ -145,30 +137,23 @@ int main(){
     //cout<<endl;
     vector <int> max;
     for(int i=1;i<=n;i++){
-        vector<int> alreadyIn;
-        vector<int> alreadyInCount;
-        vector<int>npossibleOp;
-        vector<int>npossibleOpCount;
-        int count=0;
+        vector<bool> alreadyIn(int(pow(2,n)));
+        vector<bool>npossibleOp(int(pow(2,n)));
         int incby=pow(2,i);
         for(int j=0;j<int(pow(2,n-i));j++){
-            count++;
-            alreadyIn.push_back(j*incby);
+            alreadyIn[j*incby]=true;
             //cout<<"alreadyIn"<<j*incby<<endl;
         }
-        count++;
-        alreadyIn.push_back(operate(0,incby-1));
-        alreadyInCount.push_back(count);
-        count=0;
+        alreadyIn[operate(0,incby-1)]=true;
+        //alreadyInCount.push_back(count);
         for(int j=0;j<int(pow(2,n-i));j++){
-            count++;
-            npossibleOp.push_back(j*incby+incby-1);
+            npossibleOp[j*incby+incby-1]=true;
             //cout<<"npossibleOp"<<j*incby+incby-1<<endl;
         }
-        npossibleOpCount.push_back(count);
+        //npossibleOpCount.push_back(count);
         //cout<<"operations "<<incby-1<<" "<<operate(0,incby-1)<<endl;
-        vector <int> tmp = findSeq(operate(0,incby-1),alreadyIn,alreadyInCount,npossibleOp,npossibleOpCount,n);
-        if(tmp.size()>max.size())max=tmp;
+        vector <int> tmp = findSeq(operate(0,incby-1),alreadyIn,npossibleOp,n);
+        if(tmp.size()>max.size()) max=tmp;
     }
     max.push_back(0);
     for(int i=max.size()-1;i>=0;i--){
