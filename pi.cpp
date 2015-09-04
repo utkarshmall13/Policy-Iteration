@@ -55,6 +55,21 @@ vector<int> findSeq(int last,vector<bool> &alreadyIn,vector<bool> &npossibleOp,i
     //cout<<endl;
     vector<int> ret;
     for(int i=0; i<possibleOp.size();i++){
+//To check whether the given improvable set is actually improvable or not
+//first get the subsets of improvable sets
+        bool contin=false;
+        int flippedPossibleOP=(int(pow(2,n))-1)^possibleOp[i];
+        vector<int> subsetsOfImp=findPossibilities(flippedPossibleOP,n);
+        /*cout<<"PossibleOP "<<possibleOp[i]<<endl;
+        cout<<"flippedPossibleOP "<<flippedPossibleOP<<endl;
+        for(int j=0;j<subsetsOfImp.size();j++){
+            cout<<"\tsubsets "<<subsetsOfImp[j]<<endl;
+        }*/
+        for(int j=0;j<subsetsOfImp.size();j++){
+
+            if(subsetsOfImp[j]!=0 && alreadyIn[operate(last,subsetsOfImp[j])]){contin=true;break;}
+        }
+        if(contin) continue;
         int x=operate(last,possibleOp[i]);
         //cout<<last<<" "<<possibleOp[i]<<" "<<i<<" "<<x<<endl;
 //if found strategy not gives a deproved value move inside 'if' else check next strategy
