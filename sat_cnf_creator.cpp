@@ -124,7 +124,7 @@ int main(){
     //similarly for checking distinct rows ((length*(length-1))/2)*(int(pow(2,n))) clauses are required
     //explanation similar to before
 
-    cout<<"p cnf "<<n*length<<" "<<(((length-1)*(length-2))/2)*(int(pow(6,n)))+((length*(length-1))/2)*(int(pow(2,n)))<<endl;
+    cout<<"p cnf "<<n*length<<" "<<(((length-1)*(length-2))/2)*(int(pow(6,n)))+int(pow(2,n))/*+((length*(length-1))/2)*(int(pow(2,n)))*/<<endl;
 
     //for creating OR matrix clauses
     for(int i=0;i<length-2;i++){
@@ -132,11 +132,11 @@ int main(){
             create_cnf_clause(i,j,n);
         }
     }
-
+    create_inequality_check(length-2,length-1,n);
     //for creating distinc row clauses
-    for(int i=0;i<length-1;i++){
+    /*for(int i=0;i<length-1;i++){
         for(int j=i+1;j<length;j++){
             create_inequality_check(i,j,n);
         }
-    }
+    }*/
 }
