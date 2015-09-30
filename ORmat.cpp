@@ -1,6 +1,18 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+//compile and run the file
+/*terminal will wait for inputs 1)number of states on MDP i.e. columns in OR and
+    2) number of policy iterations i.e. rows in or matrices.
+
+Remember to send the output genrated to a file say "sat.in"
+
+Use command "minisat sat.in sat.out" to get the resulting satisfying OR matrix in "sat.out"
+    or sat.out will give unsat as solution.
+
+to check try on smaller examples s.t. number of rows <= 4
+*/
+
 //class pair of two integers
 class Pair{
 public:
@@ -129,6 +141,8 @@ int main(){
     //for creating OR matrix clauses
     for(int i=0;i<length-2;i++){
         for(int j=i+1;j<length-1;j++){
+    //for(int j=2;j<length-1;j++){
+    //    for(int i=j-1;i>=0;i--){
             create_cnf_clause(i,j,n);
         }
     }
