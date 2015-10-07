@@ -62,7 +62,7 @@ int operate(int a,int mask){
     return a^mask;
 }
 
-//given the current policy and policies already in deproved set this gives the average of all policy iterations one can take from here
+//given the current policy and policies already in deproved set this gives the longest of all policy iterations one can take from here
 vector<int> longestSeq(int n,int currPolicy){
     //find possible switches
     vector<int> switchPossible;
