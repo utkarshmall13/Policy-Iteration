@@ -2,7 +2,7 @@
 using namespace std;
 
 vector< vector <int> > PIposs(16);
-vector<int> PI(15);
+vector<int> PI(16);
 
 vector<bool> alreadyIn;
 
