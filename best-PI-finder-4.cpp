@@ -6,6 +6,7 @@ vector<int> PI(16);
 
 vector<bool> alreadyIn;
 
+//function inserts all the possible switches that can happen an a possible improvement set.
 void makePIposs(){
     PIposs[0].push_back(0);
     PIposs[1].push_back(1);
@@ -26,21 +27,6 @@ void makePIposs(){
 
     PIposs[11].push_back(1);PIposs[11].push_back(2);PIposs[11].push_back(3);PIposs[11].push_back(8);PIposs[11].push_back(9);PIposs[11].push_back(10);PIposs[11].push_back(11);
     PIposs[13].push_back(1);PIposs[13].push_back(4);PIposs[13].push_back(5);PIposs[13].push_back(8);PIposs[13].push_back(9);PIposs[13].push_back(12);PIposs[13].push_back(13);
-}
-
-
-//Formatting function to represent final policies in binary state form
-string representBin(int x,int n){
-    string ret="";
-    while(x!=0){
-        ret=char(x%2+'0')+ret;
-        x>>=1;
-    }
-    string ret2=ret;
-    for(int i=0;i<n-ret.length();i++){
-        ret2=char('0')+ret2;
-    }
-    return ret2;
 }
 
 //A function that returns the possibilities of swithces to be made to get a deproved policies, given the IS
@@ -69,8 +55,9 @@ int operate(int a,int mask){
     return a^mask;
 }
 
-//given the current policy and policies already in deproved set this gives the average of all policy iterations one can take from here
+//given the current policy and policies already in deproved set, the set gives maximum number of policy iterations required from here.
 int longestSeq(int n,int len,int currPolicy){
+    //if it takes more than 8 steps it is anyways worse than howard's policy iteration, so prune here.
     if(len>8)return -1;
     //find possible switches
     vector<int> switchPossible;
@@ -99,6 +86,7 @@ int longestSeq(int n,int len,int currPolicy){
         }
         alreadyIn[operate(currPolicy,PI[IS])]=true;
         int tmp=longestSeq(n,len+1,operate(currPolicy,PI[IS]));
+        //pruning if steps>8 in atleast 1 branch
         if(tmp==-1)return -1;
         if(tmp>ret)ret=tmp;
         alreadyIn[operate(currPolicy,PI[IS])]=false;
@@ -115,6 +103,7 @@ int main(){
     int max_pi=int(pow(2,n));
     vector<bool> tmp(max_pi);
     //for(int i=0;i<16;i++){PI[i]=i;}
+    //setting all case of possible switching strategies
     PI[0]=0;
     PI[1]=1;
     PI[2]=2;
@@ -148,6 +137,8 @@ int main(){
                                                 alreadyIn[0]=true;
                                                 int policylen=longestSeq(n,1,0);
                                                 if(policylen!=-1){
+                                                    //out : policy counter : policylength if<=8;
+                                                    //out : strategy
                                                     cout<<pcounter<<" "<<policylen<<endl;
                                                     for(int i=0;i<16;i++){
                                                         cout<<PI[i]<<" ";
